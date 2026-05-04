@@ -28,11 +28,6 @@ public class Productos {
     @Column(nullable = false, length = 25) // Esto es lo mismo que NOT NULL y VARCHAR(25) en la base de datos
     private String nombre_producto;
 
-    @NotBlank(message = "La marca es obligatorio")
-    @Size(min = 3, max = 20, message = "La marca debe tener entre 3 y 20 caracteres")
-    @Column(nullable = false, length = 25)
-    private String marca;
-
     // Mapeo exacto al tipo DECIMAL SQL
     // El mapeo exacto se refiere a la forma en que conectamos un tipo de dato en
     // Java con un tipo de dato
@@ -59,5 +54,10 @@ public class Productos {
     @ManyToOne
     @JoinColumn(name = "categoria_id") // El nombre de la columna en la tabla SQL
     private Categoria categoria;
+
+    // Relacion muchos productos tienen una marca
+    @ManyToOne
+    @JoinColumn(name = "marca_id")
+    private Marca marca;
 
 }
