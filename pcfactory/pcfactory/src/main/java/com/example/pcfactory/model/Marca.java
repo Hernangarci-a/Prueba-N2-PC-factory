@@ -1,4 +1,5 @@
 package com.example.pcfactory.model;
+
 import java.util.List;
 
 import jakarta.persistence.*;

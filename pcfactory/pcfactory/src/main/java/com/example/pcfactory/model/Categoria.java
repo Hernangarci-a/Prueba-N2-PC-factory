@@ -27,7 +27,6 @@ public class Categoria {
     @Column(nullable = false, unique = true, length = 25)
     private String nombre_categoria;
 
-    // Relación Una categoría tiene muchos productos
-    @ManyToMany(mappedBy = "categorias")
-    private List<Productos> productos;
+    @OneToMany(mappedBy = "categoria")
+    private List<TipoProducto> tipoproductos;
 }
