@@ -3,7 +3,6 @@ package com.example.pcfactory.model;
 import java.util.List;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,42 +21,53 @@ import lombok.NoArgsConstructor;
 @Table(name = "productos") // Indica el nombre exacto de la tabla en MySQL
 public class Productos {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "id")
+        private Integer idProductos;
 
-    @NotBlank(message = "El nombre es obligatorio") // Validación de Java no puede ser nulo ni estar vacío
-    @Size(min = 3, max = 25, message = "El nombre debe tener entre 3 y 25 caracteres") // Límite de caracteres
-    @Column(nullable = false, length = 25) // Esto es lo mismo que NOT NULL y VARCHAR(25) en la base de datos
-    private String nombre_producto;
+        @NotBlank(message = "El nombre es obligatorio") // Validación de Java no puede ser nulo ni estar vacío
+        @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 25 caracteres") // Límite de caracteres
+        @Column(nullable = false, length = 100) // Esto es lo mismo que NOT NULL y VARCHAR(25) en la base de datos
+        private String nombreProducto;
 
-    @NotNull(message = "El precio no puede estar vacio")
-    @Max(value = 100000)
-    @Positive(message = "El precio debe ser mayor a cero")
-    @Column(nullable = false)
-    private double precioUnitario;
+        @NotNull(message = "El precio no puede estar vacio")
+        @Positive(message = "El precio debe ser mayor a cero")
+        @Column(nullable = false)
+        private double precioUnitario;
 
-    @Column(length = 70)
-    private String procesador;
+        @Column(length = 70)
+        private String procesador;
 
-    @Column(length = 20)
-    private String memoria_ram;
+        @Column(length = 20)
+        private String memoria_ram;
 
-    @Column(length = 20)
-    private String almacenamiento;
+        @Column(length = 20)
+        private String almacenamiento;
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_producto_id")
-    private TipoProducto tipoProducto;
+        @ManyToMany
+        @JoinTable(name = "categoria_productos", // El nombre que definido en el modelo
+                        joinColumns = @JoinColumn(name = "producto_id"), // Llave de esta tabla
+                        inverseJoinColumns = @JoinColumn(name = "categoria_id")) // Llave de la otra tabla
+        private List<Categoria> categorias; // Ahora es una lista porque puede tener muchas categorias
 
-    @ManyToOne
-    @JoinColumn(name = "marca_id")
-    private Marca marca;
+        @ManyToOne
+        @JoinColumn(name = "tipo_producto_id")
+        private TipoProducto tipoProducto;
 
-    @ManyToMany
-    @JoinTable(name = "productos_ventas", // El nombre que definido en el modelo
-            joinColumns = @JoinColumn(name = "producto_id"), // Llave de esta tabla
-            inverseJoinColumns = @JoinColumn(name = "ventas_id")) // Llave de la otra tabla
-    private List<Ventas> ventas; // Ahora es una lista, porque puede tener muchas ventas
+        @ManyToOne
+        @JoinColumn(name = "marca_id")
+        private Marca marca;
+
+        @ManyToMany
+        @JoinTable(name = "productos_ventas", // El nombre que definido en el modelo
+                        joinColumns = @JoinColumn(name = "producto_id"), // Llave de esta tabla
+                        inverseJoinColumns = @JoinColumn(name = "ventas_id")) // Llave de la otra tabla
+        private List<Ventas> ventas; // Ahora es una lista, porque puede tener muchas ventas
+
+        public static void setNombreTipoProducto(TipoProducto tipoProducto2) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'setNombreTipoProducto'");
+        }
 
 }

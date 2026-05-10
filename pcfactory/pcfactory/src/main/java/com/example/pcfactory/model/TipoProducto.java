@@ -21,15 +21,8 @@ public class TipoProducto {
 
     @NotBlank(message = "El nombre del tipo es obligatorio")
     @Column(nullable = false, length = 50)
-    private String nombre;
+    private String nombreTipoProducto;
 
-    // esto me recuerda a desarrollo orientado a objetos durante mi analisis
-    // la clase categoria es el abuelo
-    @ManyToOne
-    @JoinColumn(name = "id_categoria")
-    private Categoria categoria;
-
-    // mientras la clase productos es el hijo
     @OneToMany(mappedBy = "tipoProducto")
     private List<Productos> productos;
 }

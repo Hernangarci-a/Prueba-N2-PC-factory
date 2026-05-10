@@ -20,13 +20,14 @@ public class Categoria {
 
     @Id // Define la llave primaria
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Indica que es AUTO_INCREMENT en MySQL
-    private Integer id;
+    @Column(name = "id")
+    private Integer idCategoria;
 
     @NotBlank(message = "El nombre de la categoria es obligatorio") // Validación de Java no puede ser nulo ni es vacío
     @Size(min = 3, max = 25, message = "El nombre debe tener entre 3 y 25 caracteres") // Límite de caracteres
-    @Column(nullable = false, unique = true, length = 25)
-    private String nombre_categoria;
+    @Column(name = "nombre_categoria", nullable = false, unique = true, length = 25)
+    private String nombreCategoria;
 
-    @OneToMany(mappedBy = "categoria")
-    private List<TipoProducto> tipoproductos;
+    @ManyToMany(mappedBy = "categorias")
+    private List<Productos> Productos;
 }
