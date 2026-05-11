@@ -1,0 +1,87 @@
+package com.example.pcfactory.services;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.example.pcfactory.dto.SucursalDTO;
+import com.example.pcfactory.model.Colaborador;
+import com.example.pcfactory.model.Sucursal;
+import com.example.pcfactory.repository.ColaboradorRepository;
+import com.example.pcfactory.repository.SucursalRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
+public class SucursalService {
+    @Autowired
+    private SucursalRepository sucursalRepository;
+
+    @Autowired
+    private ColaboradorRepository colaboradorRepository;
+
+    public List<SucursalDTO> obtenerTodos(){
+        return sucursalRepository.findAll().stream()
+                .map(this::convertirADTO)
+                .toList();
+    }
+
+    public SucursalDTO buscarPorId(Integer id){
+        Sucursal sucursal = sucursalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("no se encontro sucursal con ID: " + id));
+        return convertirADTO(sucursal);
+    }
+
+    public Sucursal buscarSucursal(Integer id){
+        return sucursalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("no se encontro sucural con ID: " + id));
+    }
+
+    public Sucursal guardarSucursal(Sucursal sucursal){
+        if (sucursal.getNombreSucursal() == null || sucursal.getNombreSucursal().trim().isEmpty()){
+            throw new RuntimeException("el nombre no debe estar vacio");
+        }
+        return sucursalRepository.save(sucursal);
+    }
+
+    public Sucursal añadirColaborador(Integer idSucursal, Integer idColaborador){
+        Sucursal sucursal = sucursalRepository.findById(idSucursal)
+                .orElseThrow(() -> new EntityNotFoundException("no se encontro"));
+        Colaborador colaborador = colaboradorRepository.findById(idColaborador)
+                .orElseThrow(() -> new EntityNotFoundException("no se encontro"));
+        sucursal.getColaboradores().add(colaborador);
+        return sucursalRepository.save(sucursal);
+    }
+
+    public String eliminarSucursal(Integer id){
+        try{
+            Sucursal sucursal = sucursalRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("no se puede eliminar la sucursal con ID " + id + " no existe."));
+            sucursalRepository.delete(sucursal);
+            return "la sucursal " + sucursal.getNombreSucursal() + " se elimino";
+        } catch (RuntimeException e) {
+            return e.getMessage();
+        }
+    }
+
+    private SucursalDTO convertirADTO(Sucursal sucursal){
+        SucursalDTO dto = new SucursalDTO();
+        dto.setIdSucursal(sucursal.getIdSucursal());
+        dto.setNombreSucursal(sucursal.getNombreSucursal());
+        dto.setDireccionSucursal(sucursal.getDireccionSucursal());
+
+        if (sucursal.getComuna()!= null){
+            dto.setNombreComuna(sucursal.getComuna().getNombre_comuna());
+        }
+        if (sucursal.getColaboradores()!= null){
+            dto.setNombresColaboradores(sucursal.getColaboradores().stream()
+                    .map(Colaborador::getNombreColaborador)
+                    .toList());
+        } else{
+            dto.setNombresColaboradores(new ArrayList<>());
+        }
+        return dto;
+    }
+}
